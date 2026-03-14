@@ -1,0 +1,32 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "VulkanCppModule.dir\\Debug\\vulkan.obj",
+            "outputs": [
+                "E:\\Projects\\GameDev\\azer_learn_vulkan\\Azer\\lib\\vulkan_cpp_module\\Debug\\VulkanCppModule.pdb",
+                "VulkanCppModule.dir\\Debug\\",
+                "VulkanCppModule.dir\\Debug\\vulkan.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "vulkan",
+                    "source-path": "d:\\downloads\\env\\vulkansdk\\include\\vulkan\\vulkan.cppm",
+                    "is-interface": true
+                }
+            ],
+            "requires": [
+                {
+                    "logical-name": "std"
+                },
+                {
+                    "logical-name": "vulkan:video"
+                },
+                {
+                    "logical-name": "std"
+                }
+            ]
+        }
+    ]
+}
