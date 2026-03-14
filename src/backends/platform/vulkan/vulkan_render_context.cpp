@@ -3,6 +3,7 @@
 #include "vulkan_render_context.h"
 #include "GLFW/glfw3.h"
 #include "vulkan/vulkan.hpp"
+#include <map>
 
 
 namespace azer {
@@ -28,6 +29,7 @@ namespace azer {
     void VulkanRenderContext::init() {
         create_instance();
         setup_debug_messenger();
+        pick_physical_device();
     }
     
     // 创建 Vulkan 实例
@@ -120,5 +122,37 @@ namespace azer {
         debug_messenger_create_info_ext.pfnUserCallback = &debug_callback;
 
         debug_messenger = instance.createDebugUtilsMessengerEXT(debug_messenger_create_info_ext);
+    }
+
+    // 选择物理设备
+    void VulkanRenderContext::pick_physical_device() {
+        auto physical_devices = instance.enumeratePhysicalDevices();
+        if (physical_devices.empty()) {
+            throw std::runtime_error("failed to find GPUs with Vulkan support");
+        }
+
+        for (auto const& physical_device : physical_devices) {
+            if (is_device_suitable(physical_device)) {
+                this->physical_device = physical_device;
+                break;
+            }
+        }
+
+        if (physical_device == nullptr) {
+            throw std::runtime_error("failed to find a suitable GPU");
+        }
+    }
+
+    // 检查物理设备是否适合，目前仅检查是否为离散GPU且支持几何着色器，未来要添加打分机制，如果无独显则选择集成GPU
+    bool VulkanRenderContext::is_device_suitable(const vk::raii::PhysicalDevice& physical_device) {
+        auto device_properties = physical_device.getProperties();
+        auto device_features = physical_device.getFeatures();
+
+        if (device_properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu && \
+            device_features.geometryShader) {
+                return true;
+        }
+
+        return false;
     }
 }

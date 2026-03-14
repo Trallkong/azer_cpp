@@ -1,5 +1,6 @@
 #pragma once
 #include "../../../renderer/render_context.h"
+#include "vulkan/vulkan.hpp"
 #include <vector>
 #include <vulkan/vulkan_raii.hpp>
 #include <GLFW/glfw3.h>
@@ -29,11 +30,14 @@ namespace azer {
         }
 
         void setup_debug_messenger();
+        void pick_physical_device();
+        bool is_device_suitable(const vk::raii::PhysicalDevice& physical_device);
     private:
         GLFWwindow* window;
         // Vulkan 上下文
         vk::raii::Context context;
         vk::raii::Instance instance = nullptr;
         vk::raii::DebugUtilsMessengerEXT debug_messenger = nullptr;
+        vk::raii::PhysicalDevice physical_device = nullptr;
     };
 }
