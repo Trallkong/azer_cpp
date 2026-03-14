@@ -10,6 +10,8 @@ find_package(Vulkan REQUIRED)
 
 add_executable(Sandbox
     src/main.cpp
+    src/azpch.h
+    src/azpch.cpp
     
     src/core/base.h
     src/core/application.h
@@ -30,9 +32,14 @@ target_compile_definitions(Sandbox PRIVATE
 
 target_include_directories(Sandbox PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 target_link_libraries(Sandbox PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw/lib-vc2022/glfw3.lib
     Vulkan::Vulkan
+)
+
+target_precompile_headers(Sandbox PRIVATE
+    src/azpch.h
 )

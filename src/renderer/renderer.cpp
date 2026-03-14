@@ -1,3 +1,5 @@
+#include "azpch.h"
+
 #include "renderer.h"
 
 namespace azer {

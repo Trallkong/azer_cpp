@@ -1,14 +1,13 @@
+#include "azpch.h"
+
 #include "vulkan_render_context.h"
 #include "GLFW/glfw3.h"
 #include "vulkan/vulkan.hpp"
-#include <algorithm>
-#include <cstring>
-#include <stdexcept>
-#include <string>
-#include <vector>
+
 
 namespace azer {
 
+    // 验证层
     const std::vector<const char*> validation_layers = {
         "VK_LAYER_KHRONOS_validation",
     };
@@ -28,6 +27,7 @@ namespace azer {
 
     void VulkanRenderContext::init() {
         create_instance();
+        setup_debug_messenger();
     }
     
     // 创建 Vulkan 实例
@@ -69,6 +69,10 @@ namespace azer {
                 }
         }
         required_extensions.assign(glfw_extensions, glfw_extensions + glfw_extension_count);
+        if (enable_validation_layer) {
+            // 用于设置自定义调试回调，方便格式化打印调试信息
+            required_extensions.push_back(vk::EXTDebugUtilsExtensionName);
+        }
         return required_extensions;
     }
     
@@ -92,5 +96,29 @@ namespace azer {
             throw std::runtime_error("Required validation layer not supported: " + std::string(*unsupported_layer_it));
         }
         return required_layers;
+    }
+
+    // 设置验证层回调
+    void VulkanRenderContext::setup_debug_messenger() {
+        if (!enable_validation_layer) return;
+
+        vk::DebugUtilsMessageSeverityFlagsEXT severity_flags(
+            vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
+            vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
+            vk::DebugUtilsMessageSeverityFlagBitsEXT::eError
+        );
+
+        vk::DebugUtilsMessageTypeFlagsEXT message_type_flags(
+            vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
+            vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
+            vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance
+        );
+
+        vk::DebugUtilsMessengerCreateInfoEXT debug_messenger_create_info_ext {};
+        debug_messenger_create_info_ext.messageSeverity = severity_flags;
+        debug_messenger_create_info_ext.messageType = message_type_flags;
+        debug_messenger_create_info_ext.pfnUserCallback = &debug_callback;
+
+        debug_messenger = instance.createDebugUtilsMessengerEXT(debug_messenger_create_info_ext);
     }
 }

@@ -1,3 +1,5 @@
+#include "azpch.h"
+
 #include "render_context.h"
 #include <cassert>
 #include "renderer.h"

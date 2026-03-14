@@ -1,3 +1,5 @@
+#include "azpch.h"
+
 #include "core/application.h"
 
 #include <iostream>
